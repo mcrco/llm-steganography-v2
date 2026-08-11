@@ -4,9 +4,9 @@ How this workspace was stood up and why the environment looks the way it does.
 
 ## Context
 
-The previous repo was a CS159 LoRA/Gumbel training experiment for encode→decode steganography. It did not converge and mixed Unsloth training with dataset scripts. Claude’s August 2026 marking commitments make the *idea* timely again, but provider watermarking ≠ this task: here the model itself must learn a shared encode/decode convention in language.
+The original CS159 LoRA/Gumbel experiment lives at [`mcrco/llm-steganography`](https://github.com/mcrco/llm-steganography) (kept as-is). This repo (`llm-steganography-v2`) is a clean rebuild as a **Prime Intellect v1 eval/RL environment** — no local training loop.
 
-This pass rebuilds as a **Prime Intellect v1 eval/RL environment** only — no local training loop.
+Claude’s August 2026 marking commitments make the *idea* timely again, but provider watermarking ≠ this task: here the model itself must learn a shared encode/decode convention in language.
 
 ## Setup steps taken
 
