@@ -1,0 +1,11 @@
+# Local smoke eval for the encode→decode steganography env.
+# Usage: uv run eval @ configs/eval/llm-steganography-smoke.toml
+
+model = "openai/gpt-4.1-mini"
+num_tasks = 4
+num_rollouts = 1
+push = false
+
+[env.taskset]
+id = "llm-steganography"
+num_tasks = 16
