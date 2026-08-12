@@ -1,11 +1,11 @@
 # Small Hosted Training sanity run for encode→decode steganography.
-# Sized to stay under ~$5–6 at Qwen3.5-4B rates (wallet ~$8).
+# Uses v0 load_environment() (legacy [[env]] id) for Hosted Training compatibility.
 # Usage: prime train configs/rl/llm-steganography-qwen35-4b-sanity.toml -y --plain
 
 name = "stego-qwen35-4b-sanity"
 model = "Qwen/Qwen3.5-4B"
 
-# 20 × 32 × 8 ≈ 5.1k episodes (encode+decode each). Keep headroom vs $8 wallet.
+# 20 × 32 × 8 ≈ 5.1k episodes. Keep headroom vs ~$8 wallet.
 max_steps = 20
 batch_size = 32
 rollouts_per_example = 8
@@ -15,6 +15,5 @@ max_tokens = 512
 enable_thinking = false
 
 [[env]]
-name = "llm-steganography"
-taskset = { id = "mcrco/llm-steganography", num_tasks = 80, min_words = 80, max_words = 180 }
-harness = { id = "null" }
+id = "mcrco/llm-steganography"
+args = { num_tasks = 80, min_words = 80, max_words = 180 }

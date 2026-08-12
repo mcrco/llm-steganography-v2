@@ -86,17 +86,11 @@ class DecodeTask(vf.Task[DecodeData]):
         return 1.0 if parse_bit(trace.last_reply) is not None else 0.0
 
 
-class LlmSteganographyEnvConfig(vf.EnvConfig):
-    """One agent seat; same CLI knobs as SingleAgentEnv (`--env.agent.*`)."""
-
-    agent: vf.AgentConfig = vf.AgentConfig()
-
-
-class LlmSteganographyEnv(vf.Env[LlmSteganographyEnvConfig]):
+class LlmSteganographyEnv(vf.SingleAgentEnv):
     """Encode, then decode in a fresh conversation (same agent, no history leak).
 
-    Subclasses `vf.Env` (not `SingleAgentEnv`) so Hosted Training runtimes that
-    only export the base Env API still import cleanly.
+    Local/v1 eval path. Hosted Training uses the v0 `load_environment()` in
+    `v0_env.py` because the hosted verifiers build lacks `SingleAgentEnv`.
     """
 
     async def run(self, task: EncodeTask, agents: vf.Agents) -> None:
