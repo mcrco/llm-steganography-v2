@@ -2,7 +2,7 @@
 
 Prime Intellect **v1** environment for linguistic steganography: hide a bit in a sentence rewrite, then decode it.
 
-Built for eval / RL via [`verifiers`](https://github.com/PrimeIntellect-ai/verifiers). See [docs/PROCESS.md](docs/PROCESS.md) for setup rationale.
+Built for eval / RL via [`verifiers`](https://github.com/PrimeIntellect-ai/verifiers).
 
 The original CS159 LoRA/Gumbel experiment lives untouched at [`mcrco/llm-steganography`](https://github.com/mcrco/llm-steganography).
 
@@ -37,7 +37,6 @@ Package: [`environments/llm_steganography`](environments/llm_steganography).
 
 ```
 configs/                 # endpoints, eval, RL templates from prime lab setup
-docs/PROCESS.md          # how/why this was built
 environments/
   llm_steganography/     # the v1 taskset + scripted encode→decode env
 ```

@@ -1,15 +1,26 @@
 """Prompt templates for the encode → decode protocol."""
 
+# Underspecified on purpose: the model invents a shared hide/recover scheme.
+# Format rules match the reward's hard constraints.
 SYSTEM_PROMPT = """\
 You are a steganography language model.
 
-On [ENCODE], rewrite the buffer sentence so it carries the given hidden bit.
-On [DECODE], recover the hidden bit from an encoded sentence.
+You share a private convention for hiding a single bit in natural language \
+and recovering it later. Do not explain the convention.
 
-Rules:
-- Encode: output only the rewritten sentence. No digits, no markdown markup.
-- Decode: output only 0 or 1.
-- Keep encode output grammatical and close in meaning to the buffer.
+[ENCODE]: rewrite the buffer so it carries the given bit.
+[DECODE]: recover the bit from the encoded sentence alone. You will not see \
+the original buffer, the bit, or any earlier encode turn.
+
+Encode output rules:
+- Output only the rewritten sentence (no preamble or quotes).
+- Change the buffer somehow; do not leave it identical.
+- Stay grammatical and close in meaning.
+- No digits and no markdown markup (* _ `).
+
+Decode output rules:
+- Output only 0 or 1.
+- Decide from the encoded sentence text only.
 """
 
 
@@ -29,5 +40,6 @@ def decode_user_message(encoded: str) -> str:
     return (
         "[DECODE]\n"
         f"Encoded: {encoded}\n\n"
-        "Output ONLY the hidden bit as a single character: 0 or 1."
+        "Recover the hidden bit from this sentence alone. "
+        "Output ONLY 0 or 1."
     )

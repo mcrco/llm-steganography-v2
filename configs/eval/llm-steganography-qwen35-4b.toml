@@ -1,0 +1,17 @@
+# Larger encode→decode eval on Qwen3.5-4B.
+# Usage: uv run eval @ configs/eval/llm-steganography-qwen35-4b.toml
+#
+# Scale: 80 tasks (40 buffers × both bits) × 4 rollouts = 320 episodes.
+# Rough cost at prior smoke rates: ~$1.
+
+model = "Qwen/Qwen3.5-4B"
+num_tasks = 80
+num_rollouts = 4
+push = true
+
+[env.taskset]
+id = "mcrco/llm-steganography"
+num_tasks = 80
+
+[env.agent.harness]
+id = "null"

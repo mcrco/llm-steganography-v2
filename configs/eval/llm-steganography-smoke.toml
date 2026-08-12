@@ -4,8 +4,12 @@
 model = "Qwen/Qwen3.5-4B"
 num_tasks = 4
 num_rollouts = 1
-push = false
+push = true
 
 [env.taskset]
-id = "llm-steganography"
+id = "mcrco/llm-steganography"
 num_tasks = 16
+
+# Plain chat — not the default bash coding harness.
+[env.agent.harness]
+id = "null"

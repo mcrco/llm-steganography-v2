@@ -4,10 +4,10 @@ v1 verifiers environment for **linguistic steganography**: hide a bit in a natur
 
 ## Protocol
 
-Two scripted turns per episode (same model):
+Two isolated single-turn runs per episode (same agent/model):
 
 1. **Encode** — rewrite a buffer sentence to carry bit `0` or `1`
-2. **Decode** — output only that bit
+2. **Decode** — fresh conversation; model sees only the encoded sentence (not the bit)
 
 ## Scoring
 
@@ -21,7 +21,7 @@ Semantic similarity is intentionally deferred.
 
 ## Data
 
-`smoke_data.py` holds 8 short buffers. Default `num_tasks=16` pairs each buffer with both bits.
+`buffers.py` holds 40 short cover sentences. Default `num_tasks=80` pairs each with both bits.
 
 ## Install & eval
 
