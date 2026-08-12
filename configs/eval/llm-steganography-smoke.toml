@@ -1,14 +1,19 @@
 # Local smoke eval for the encode→decode steganography env.
 # Usage: uv run eval @ configs/eval/llm-steganography-smoke.toml
 
-model = "Qwen/Qwen3.5-4B"
+model = "Qwen/Qwen3.5-0.8B"
 num_tasks = 4
 num_rollouts = 1
 push = true
 
+[sampling]
+max_tokens = 512
+
 [env.taskset]
 id = "mcrco/llm-steganography"
 num_tasks = 16
+min_words = 80
+max_words = 180
 
 # Plain chat — not the default bash coding harness.
 [env.agent.harness]

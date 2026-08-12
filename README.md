@@ -1,6 +1,6 @@
 # llm-steganography-v2
 
-Prime Intellect **v1** environment for linguistic steganography: hide a bit in a sentence rewrite, then decode it.
+Prime Intellect **v1** environment for linguistic steganography: hide a bit in a TinyStories rewrite, then decode it.
 
 Built for eval / RL via [`verifiers`](https://github.com/PrimeIntellect-ai/verifiers).
 
@@ -26,10 +26,10 @@ The package exports both `LlmSteganographyTaskset` and `LlmSteganographyEnv`; ev
 
 | Piece | Role |
 | --- | --- |
-| Encode turn | Rewrite buffer to carry bit `0`/`1` |
-| Decode turn | Emit only that bit |
+| Encode turn | Rewrite a TinyStories story to carry bit `0`/`1` |
+| Decode turn | Emit only that bit (isolated conversation) |
 | Reward | Bit recovery, gated by hard format constraints |
-| Data | 8 smoke buffers × 2 bits (`num_tasks=16`) |
+| Data | TinyStories (`num_tasks=80` → 40 stories × both bits) |
 
 Package: [`environments/llm_steganography`](environments/llm_steganography).
 

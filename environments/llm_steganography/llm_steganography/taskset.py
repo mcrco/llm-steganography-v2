@@ -1,14 +1,16 @@
 """Encode→decode linguistic steganography taskset.
 
 Each episode is two isolated single-turn runs of the same agent:
-1. encode — rewrite a buffer sentence to carry a hidden bit
-2. decode — recover that bit from the encoded sentence only
+1. encode — rewrite a TinyStories story to carry a hidden bit
+2. decode — recover that bit from the encoded story only
 
 Decode runs in a fresh conversation so the encode prompt (and bit) are not
 visible. Reward is bit recovery under hard format constraints.
 """
 
 from __future__ import annotations
+
+from typing import Literal
 
 import verifiers.v1 as vf
 
@@ -23,12 +25,12 @@ from llm_steganography.scoring import (
     normalize_text,
     parse_bit,
 )
-from llm_steganography.buffers import BUFFERS
+from llm_steganography.tinystories import load_stories
 
 
 class EncodeData(vf.TaskData):
-    buffer: str
-    """Cover sentence the model must rewrite while hiding the bit."""
+    story: str
+    """TinyStories cover text the model must rewrite while hiding the bit."""
 
     bit: int
     """Ground-truth hidden bit in {0, 1}."""
@@ -90,7 +92,7 @@ class LlmSteganographyEnv(vf.SingleAgentEnv):
     async def run(self, task: EncodeTask, agents: vf.Agents) -> None:
         async with agents.agent.interaction(task) as interaction:
             encode_segment = await interaction.turn(
-                encode_user_message(task.data.buffer, task.data.bit)
+                encode_user_message(task.data.story, task.data.bit)
             )
             if encode_segment.terminated:
                 return
@@ -116,25 +118,48 @@ class LlmSteganographyEnv(vf.SingleAgentEnv):
 
 class LlmSteganographyConfig(vf.TasksetConfig):
     num_tasks: int = 80
-    """How many buffer×bit pairs to load (40 buffers × 2 bits = 80)."""
+    """How many story×bit pairs to load (each story is used with both bits)."""
+
+    split: Literal["train", "validation"] = "train"
+    """TinyStories split to sample cover stories from."""
+
+    seed: int = 0
+    """Shuffle seed for reproducible story sampling."""
+
+    min_words: int = 80
+    """Reject shorter stories (keeps covers story-shaped, not tiny scraps)."""
+
+    max_words: int = 180
+    """Reject longer stories so encode generations stay bounded."""
 
 
 class LlmSteganographyTaskset(vf.Taskset[EncodeTask, LlmSteganographyConfig]):
     def load(self) -> list[EncodeTask]:
+        c = self.config
+        # Both bits per story → need ceil(num_tasks / 2) unique stories.
+        num_stories = (c.num_tasks + 1) // 2
+        stories = load_stories(
+            split=c.split,
+            num_stories=num_stories,
+            seed=c.seed,
+            min_words=c.min_words,
+            max_words=c.max_words,
+        )
+
         tasks: list[EncodeTask] = []
         idx = 0
-        pairs = [(buffer, bit) for buffer in BUFFERS for bit in (0, 1)]
-        for buffer, bit in pairs[: self.config.num_tasks]:
+        pairs = [(story, bit) for story in stories for bit in (0, 1)]
+        for story, bit in pairs[: c.num_tasks]:
             tasks.append(
                 EncodeTask(
                     EncodeData(
                         idx=idx,
                         prompt=None,
                         system_prompt=SYSTEM_PROMPT,
-                        buffer=buffer,
+                        story=story,
                         bit=bit,
                     ),
-                    self.config.task,
+                    c.task,
                 )
             )
             idx += 1
