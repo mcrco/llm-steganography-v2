@@ -37,7 +37,7 @@ uv pip install -e environments/llm_steganography
 uv run eval llm-steganography -n 4 -m Qwen/Qwen3.5-4B --no-push
 ```
 
-`LlmSteganographyEnv` is exported from the same package, so eval picks it up automatically (no `--env.id` needed).
+`LlmSteganographyEnv` is exported from the same package, so eval picks it up automatically (no `--env.id` needed). The env defaults the agent harness to `null` (plain chat).
 
 Story rewrites need headroom:
 

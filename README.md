@@ -20,7 +20,7 @@ uv pip install -e environments/llm_steganography
 uv run eval llm-steganography -n 4 -m openai/gpt-4.1-mini --no-push
 ```
 
-The package exports both `LlmSteganographyTaskset` and `LlmSteganographyEnv`; eval auto-selects the env from the taskset package.
+The package exports both `LlmSteganographyTaskset` and `LlmSteganographyEnv`. The env defaults to the `null` (plain chat) harness.
 
 ## Environment
 

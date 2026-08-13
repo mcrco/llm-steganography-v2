@@ -1,5 +1,4 @@
 # Small Hosted Training sanity run for encode→decode steganography.
-# Uses v0 load_environment() (legacy [[env]] id) for Hosted Training compatibility.
 # Usage: prime train configs/rl/llm-steganography-qwen35-4b-sanity.toml -y --plain
 
 name = "stego-qwen35-4b-sanity"
@@ -15,5 +14,6 @@ max_tokens = 512
 enable_thinking = false
 
 [[env]]
-id = "mcrco/llm-steganography"
-args = { num_tasks = 80, min_words = 80, max_words = 180 }
+name = "llm-steganography"
+taskset = { id = "mcrco/llm-steganography", num_tasks = 80, min_words = 80, max_words = 180 }
+harness = { id = "null" }

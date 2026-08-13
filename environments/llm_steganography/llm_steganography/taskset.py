@@ -1,11 +1,12 @@
-"""Encode→decode linguistic steganography taskset.
+"""Encode→decode linguistic steganography: v1 taskset + env.
 
 Each episode is two isolated single-turn runs of the same agent:
 1. encode — rewrite a TinyStories story to carry a hidden bit
 2. decode — recover that bit from the encoded story only
 
-Decode runs in a fresh conversation so the encode prompt (and bit) are not
-visible. Reward is bit recovery under hard format constraints.
+Decode is a second `agent.run` (fresh conversation) so the encode prompt and
+bit never appear in decode history. Reward is bit recovery under hard format
+constraints.
 """
 
 from __future__ import annotations
@@ -86,23 +87,20 @@ class DecodeTask(vf.Task[DecodeData]):
         return 1.0 if parse_bit(trace.last_reply) is not None else 0.0
 
 
-class LlmSteganographyEnv(vf.SingleAgentEnv):
-    """Encode, then decode in a fresh conversation (same agent, no history leak).
+class LlmSteganographyEnvConfig(vf.SingleAgentEnvConfig):
+    """One agent seat. Default harness is plain chat (`null`), not `bash`."""
 
-    Local/v1 eval path. Hosted Training uses the v0 `load_environment()` in
-    `v0_env.py` because the hosted verifiers build lacks `SingleAgentEnv`.
-    """
+    agent: vf.AgentConfig = vf.AgentConfig(harness={"id": "null"})
+
+
+class LlmSteganographyEnv(vf.Env[LlmSteganographyEnvConfig]):
+    """Encode, then decode in a fresh conversation (same agent, no history leak)."""
 
     async def run(self, task: EncodeTask, agents: vf.Agents) -> None:
-        async with agents.agent.interaction(task) as interaction:
-            encode_segment = await interaction.turn(
-                encode_user_message(task.data.story, task.data.bit)
-            )
-            if encode_segment.terminated:
-                return
-            encoded = normalize_text(encode_segment.last_reply)
-
-        # New rollout: transcript is only system + decode prompt.
+        encode_trace = await agents.agent.run(task)
+        if not encode_trace.ok:
+            return
+        encoded = normalize_text(encode_trace.last_reply)
         await agents.agent.run(DecodeTask.from_encode(task, encoded))
 
     async def finalize(self, task: EncodeTask, episode: vf.Episode) -> None:
@@ -158,7 +156,7 @@ class LlmSteganographyTaskset(vf.Taskset[EncodeTask, LlmSteganographyConfig]):
                 EncodeTask(
                     EncodeData(
                         idx=idx,
-                        prompt=None,
+                        prompt=encode_user_message(story, bit),
                         system_prompt=SYSTEM_PROMPT,
                         story=story,
                         bit=bit,
